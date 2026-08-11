@@ -1,0 +1,27 @@
+{
+  "name": "orgsuite-slack-bot",
+  "version": "1.0.0",
+  "description": "Professional Slack Bot for OrgSuite / Point Goddess CC – notifications, workflow triggers, and team automation",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "ts-node src/index.ts",
+    "lint": "echo \"Add eslint if needed\""
+  },
+  "keywords": ["slack", "bot", "orgsuite", "automation"],
+  "author": "Point Goddess CC",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@slack/bolt": "^3.21.0",
+    "dotenv": "^16.4.5"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.5.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
