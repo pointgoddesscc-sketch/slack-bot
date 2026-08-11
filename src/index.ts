@@ -1,54 +1,43 @@
 /**
  * OrgSuite Slack Bot
- * Professional starter for Point Goddess CC / PSE Management
- *
- * Features ready to extend:
- * - Slash commands
- * - Event handling
- * - Secure token loading from environment
+ * Professional bot for Point Goddess CC / PSE Management
  */
 
 import { App, LogLevel } from "@slack/bolt";
 import * as dotenv from "dotenv";
+import { registerStatusCommand } from "./commands/status";
 
 dotenv.config();
+
+const required = ["SLACK_BOT_TOKEN", "SLACK_SIGNING_SECRET", "SLACK_APP_TOKEN"];
+for (const key of required) {
+  if (!process.env[key]) {
+    console.warn(`Warning: ${key} is not set`);
+  }
+}
 
 const app = new App({
   token: process.env.SLACK_BOT_TOKEN,
   signingSecret: process.env.SLACK_SIGNING_SECRET,
   socketMode: true,
   appToken: process.env.SLACK_APP_TOKEN,
-  logLevel: LogLevel.INFO,
+  logLevel: process.env.NODE_ENV === "production" ? LogLevel.INFO : LogLevel.DEBUG,
 });
 
-/**
- * Example slash command: /orgsuite
- * Responds with a professional status message.
- */
-app.command("/orgsuite", async ({ command, ack, respond }) => {
-  await ack();
+// Register modular commands
+registerStatusCommand(app);
 
-  await respond({
-    response_type: "ephemeral",
-    text: `OrgSuite Slack Bot is online.\nRequested by <@${command.user_id}>.\nWorkspace ready for automation and notifications.`,
-  });
-});
-
-/**
- * Example message listener (only responds when bot is mentioned)
- */
+// Mention handler
 app.event("app_mention", async ({ event, say }) => {
   await say({
-    text: `Hello <@${event.user}>. OrgSuite Slack Bot is ready. Use /orgsuite for status.`,
+    text: `Hello <@${event.user}>. OrgSuite Slack Bot is ready.\nTry the slash command: */orgsuite*`,
     thread_ts: event.ts,
   });
 });
 
-/**
- * Health / ready log
- */
+// Health
 (async () => {
-  const port = process.env.PORT || 3000;
+  const port = Number(process.env.PORT) || 3000;
   await app.start(port);
-  console.log(`OrgSuite Slack Bot is running on port ${port}`);
+  console.log(`OrgSuite Slack Bot running on port ${port}`);
 })();
